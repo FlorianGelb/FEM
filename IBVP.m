@@ -2,7 +2,7 @@ tic
 N = 25;
 dt = 0.0001
 X = 1;
-T = 5;
+T = 2;
 K = zeros(N);
 M = zeros(N);
 delta_x = X / (N-1);
@@ -17,7 +17,7 @@ F = zeros(N, 1);
 p(x) = 0
 H(1) = f(0);
 H(end) = f(X);
-alpha = 0.1
+alpha = 0.001;
 
 for i = 1:N-2
   F(i+1) =   integral(matlabFunction(f(x) * triangularPulse((i-1)*delta_x, (i)*delta_x, (i+1)*delta_x, x)), 0, X);
@@ -51,7 +51,7 @@ C(:, 1) = c_o;
 j = 2;
 im = inv(M);
 for i=dt:dt:T
-    c_n = dt * im * K * c_o + c_o;
+    c_n = alpha*dt * im * K * c_o + c_o;
     c_o = c_n;
     C(:, j) = c_o;
     j= j +1;
@@ -62,11 +62,11 @@ dx = 0.01;
 S = []
 for t = 1:1:T/dt
 c = C(:, t);
-interp_c = interp1([0:delta_x:X], c, [0:dx:X]);
+interp_c = interp1([0:delta_x:X], c, [0:dx:X-dx]);
 S(:,t) = interp_c;
 end
 
-[U, Z, V] = svd(S.', "econ");
+[U, Z, V] = svd(S,"econ");
 energies = diag(Z) / trace(Z);
 e_t = 0.95;
 e = 0;
@@ -83,13 +83,29 @@ U2 = U(:, 1:trunc);
 
 phi = [];
 for i = 1:trunc
-phi(:, i) = Nderiv2(U(:, i), dx);
+phi(:, i) = Nderiv2(Nderiv2(U2(:, i), dx), dx);
 end
 
-[t, asol] = ode45(@rhs_a, [0:dt:T], U2.'*S(1,:).', [], U, phi, alpha);
+a = U2.'*S(:, 1);
+a0 = a;
+A = []
+A(1, :) = U2*a;
+j = 2;
 
-
-
+%dt = dt/10;
+%{for i=dt:dt:T
+    %a_n = dt*alpha * U2.'*phi*a + a;
+    %a = a_n;
+    %A(j, :) = U2*a;
+    %j= j +1;
+   %end
+   
+%A = A.';
+[t, asol] = ode45("a_rhs", [0:dt:T], a0,[], U2, phi, alpha);
+for j = 1:length(t)
+    usol(j,:) = asol(j,1)*U2(:,1) + asol(j,2)*U2(:,2);
+end
+A = usol;
 figure(1)
 imagesc(C)
 colormap turbo
@@ -99,7 +115,7 @@ imagesc(S);
 colormap turbo
 colorbar
 figure(3)
-imagesc(S2.')
+imagesc(A)
 colormap turbo
 colorbar
 figure(4)
@@ -109,7 +125,7 @@ toc
 
 function dy = Nderiv2(y,h)
 % Compute the second derivative of input vector y, with spacing h
-n = length(y)
+n = length(y);
 for i=1:n;
     switch i
         case 1
@@ -126,6 +142,3 @@ end
 end
 end
 
-function rhs=rhs_a(t, a, dummy, phi, phixx, alph);
-rhs = phi.' * phixx * a * alph;
-end
