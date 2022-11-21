@@ -1,7 +1,7 @@
 clear;clc;close all
 tic
 N = 50;
-dt = 0.0001
+dt = 0.00001
 X = 1;
 T = 1;
 K = zeros(N);
@@ -13,12 +13,12 @@ t(x) = triangularPulse(0, delta_x, 2 * delta_x, x)^2;
 t2(x)= triangularPulse(0, delta_x, 2 * delta_x, x) * triangularPulse(delta_x, 2 * delta_x, 3* delta_x, x);
 ii = integral(matlabFunction(t(x)), 0, X);
 ij = integral(matlabFunction(t2(x)), 0, X);
-f(x) = 100*exp(-0.5*(x-5)) + exp(0.5*(x-X+15));
+f(x) = 1;%100*exp(-0.5*(x-5)) + exp(0.5*(x-X+15));
 F = zeros(N, 1);
 p(x) = 0
 H(1) = f(0);
 H(end) = f(X);
-alpha = 0.0005;
+alpha = 1;
 
 for i = 1:N-2
   F(i+1) =   integral(matlabFunction(f(x) * triangularPulse((i-1)*delta_x, (i)*delta_x, (i+1)*delta_x, x)), 0, X);
@@ -94,7 +94,7 @@ end
 
 a = U2.'*S(:, 1);
 a0 = a;
-A = []
+A = [];
 A(1, :) = U2*a;
 j = 2;
 Y = U2.'*phi;
