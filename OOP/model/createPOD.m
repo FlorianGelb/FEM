@@ -42,7 +42,7 @@ classdef createPOD
                     usol(j,:) = usol(j, :) + asol(j,i)*phi(:,i).';
                 end
             end
-            sol = solution(usol.', obj.snapshots.methode, 1);
+            sol = solution(usol.', obj.snapshots.methode, 1, obj.snapshots);
         end
 
         function der = spectral_der(obj, v)

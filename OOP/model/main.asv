@@ -36,26 +36,18 @@ classdef main
             for i = 1:length(obj.sols)
                     sol = obj.sols{i};
                     buffer = {};
-                    if isa(sol.pred, "double")
-                        continue;
-                    end
-                    while ~isa(sol.pred, "double")
+                    while sol.pred ~= 0
                         buffer{end + 1} = obj.sols{i};
-                        sol = sol.pred;
-                        if isa(sol.pred, "double")
-                            buffer{end + 1} = sol;
-                            break;
-                        end
-                        
+                        sol = obj.sols{i}.pred;
                     end
                     
            
                     figure(i)
                     for j = 1:length(buffer)
-                        subplot(1, length(buffer), j);
-                        h = pcolor(T, X,flip(buffer{j}.solution_data));
+                        subplot(ceil(length(buffer)/2,, le)
+                        h = pcolor(T, X,flip(obj.sols{i}.solution_data));
                         set(h, 'EdgeColor', 'none');
-                        title(buffer{j}.methode + ", POD: " + string(buffer{j}.pod));
+                        title(obj.sols{i}.methode + ", POD: " + string(obj.sols{i}.pod));
                         colormap turbo;
                         colorbar;
                     end

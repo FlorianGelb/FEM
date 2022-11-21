@@ -17,7 +17,7 @@ classdef containerFT < container
             for j = 1:length(t)
                 usol(j, :) = ifft(fft_sol(j,:));    
             end
-            sol = solution(usol.', "FT", 0);
+            sol = solution(usol.', "FT", 0, 0);
         end
     end
 end
