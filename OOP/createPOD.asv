@@ -1,0 +1,36 @@
+classdef createPOD
+    
+    properties
+        snapshots;
+        energie;
+        k;
+    end
+    
+    methods
+        function obj = createPOD(snapshots,energie, k)
+            obj.snapshots = snapshots;
+            obj.energie = energie;
+            obj.k = k;
+
+            [U S V] = svd(obj.snapshots, "econ");
+            E = daig(S)/trace(S);
+            n_mode = 0;
+            cum_E = 0;
+            for i = 1:length(E)
+                cum_E = cum_E + E(i);
+                n_mode = n_mode + 1;
+                if cum_E >= obj.energie
+                break
+                end
+            end
+            
+            U_trunc = U(:, 1:n_mode);
+
+        end
+
+        function der = spectral_der(v)
+        der = ifft(-k.^2 * fft(v))
+        end
+    end
+end
+

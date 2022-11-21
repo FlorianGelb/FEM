@@ -1,0 +1,48 @@
+classdef main
+    
+    properties
+        algorithms = {};
+        parameterObj;
+        sols = {};
+        pod_sols = {};
+    end
+    
+    methods
+        function obj = main(algorithms, L, u0, T, n, nt, alpha)
+            obj.parameterObj = parameters(L, u0, T, n, nt, alpha);
+            for i  = 1:length(algorithms)
+                if algorithms(i) == "FT"
+                    obj.algorithms{end + 1} = containerFT(obj.parameterObj);
+                end
+            end
+        end
+        
+        function obj = pod(obj, ener)
+            for i = 1:length(obj.sols)
+                pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
+                obj.pod_sols{i} = pod.solve();
+            end
+        end
+
+        function obj = solve(obj)
+            for i  = 1:length(obj.algorithms)
+                obj.sols{end + 1} = obj.algorithms{i}.solve();
+            end
+        end
+        
+        function plot(obj)
+            sols = {obj.sols, obj.pod_sols};
+            T = obj.parameterObj.t;
+            X = obj.parameterObj.X;
+            for i = 1:length(sols)
+                figure(i)
+                h = pcolor(T, X,flip(sols{i}{1}));
+                set(h, 'EdgeColor', 'none');
+                colormap turbo;
+                colorbar;
+            end
+        end
+
+    end
+end
+

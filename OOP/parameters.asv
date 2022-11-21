@@ -1,0 +1,37 @@
+classdef parameters   
+    properties
+        L;
+        u;
+        u0;
+        T;
+        n;
+        dx;
+        dt;
+        X;
+        t;
+        alpha;
+        k;
+    end
+    
+    methods
+        function obj = parameters(L, u, u0, T, n, dx, dt, alpha)
+            if L < 0
+                E = MException("L > 0");
+            end
+
+            obj.L = L;
+            obj.u = u;
+            obj.u0 = u0;
+            obj.T = T;
+            obj.n = n;
+            obj.dx = dx;
+            obj.dt = dt;
+            obj.alpha = alpha;
+            obj.X = linspace(0, L, n);
+            obj.t = linspace(0, T, nt);
+            obj.k = (2*pi/L) * [0:n/2-1 -n/2:-1].';
+        end    
+
+    end
+end
+
