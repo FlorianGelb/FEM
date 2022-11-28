@@ -47,7 +47,7 @@ Mmod(1,:) = [1, zeros(1, N-1)];
 Mmod(N,:) = [zeros(1, N-1), 1];
 C = zeros(N, uint16(1+(T/dt)));
 c_o = inv(Mmod)*F;
-
+M = Mmod;
 C(:, 1) = c_o;
 j = 2;
 im = inv(M);

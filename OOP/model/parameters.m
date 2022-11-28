@@ -11,11 +11,12 @@ classdef parameters
         alpha;
         k;
         nt;
+        n_nodes;
     end
     
     methods
         function obj = parameters(L, u0, T, n, nt, alpha)
-            if L <= 0 || T <= 0 || n <= 0 || nt <= 0 || alpha < 0
+            if L <= 0 || T <= 0 || n <= 0 || nt <= 0 || alpha < 0 
                 E = MException("parameters:WrongParameter", "Invalid parameter set");
                 throw(E);
             end
@@ -25,7 +26,7 @@ classdef parameters
             obj.T = T;
             obj.n = n;
             obj.nt = nt;
-            obj.dx = L/n;
+            obj.dx = L/(n-1);
             obj.alpha = alpha;
             obj.X = linspace(0, L, n);
             obj.t = linspace(0, T, nt);
