@@ -12,6 +12,8 @@ classdef main
             for i  = 1:length(algorithms)
                 if algorithms(i) == "FT"
                     obj.algorithms{end + 1} = containerFT(obj.parameterObj);
+                elseif algorithms(i) == "FEM"
+                    obj.algorithms{end + 1} = containerFEM(obj.parameterObj);
                 end
             end
         end
