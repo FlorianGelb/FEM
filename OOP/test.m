@@ -1,16 +1,17 @@
-T = 0.1;
+T = 5;
 L = 1;
 n = 50;
 dx = L/(n-1);
-nt = 10000;
+nt = 100000;
 k = (2*pi/L) * [0:n/2-1 -n/2:-1].';
 X = linspace(0, L, n);
 t = linspace(0, T, nt);
-alpha = 1;
-u0 = sin(2*pi/L * X);
+alpha = 0.05;
+u0 = 0*sin(2*pi/L * X) + 1;
 
 
-m = main(["FEM", "FT"], L, u0, T, n, nt, alpha);
+m = main(["FEM"], L, u0, T, n, nt, alpha);
 m = m.solve();
-m = m.pod(0.95);
+m = m.pod(0.999955);
 m.plot();
+

@@ -17,6 +17,7 @@ classdef createPOD
             snapshots = obj.snapshots.solution_data;
             [U S V] = svd(snapshots, "econ");
             E = diag(S)/trace(S);
+            plot(E)
             n_mode = 0;
             cum_E = 0;
             for i = 1:length(E)
