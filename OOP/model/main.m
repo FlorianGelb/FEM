@@ -7,8 +7,8 @@ classdef main
     end
     
     methods
-        function obj = main(algorithms, L, u0, T, n, nt, alpha)
-            obj.parameterObj = parameters(L, u0, T, n, nt, alpha);
+        function obj = main(algorithms, L, u0, h, T, n, nt, alpha)
+            obj.parameterObj = parameters(L, u0, h, T, n, nt, alpha);
             for i  = 1:length(algorithms)
                 if algorithms(i) == "FT"
                     obj.algorithms{end + 1} = containerFT(obj.parameterObj);
@@ -55,11 +55,16 @@ classdef main
                     figure(i)
                     for j = 1:length(buffer)
                         subplot(1, length(buffer), j);
-                        h = pcolor(T, X,flip(buffer{j}.solution_data));
-                        set(h, 'EdgeColor', 'none');
+                        disp("--")
+                        size(flip(buffer{j}.solution_data))
+                        size(X)
+                        size(T)
+                        h = imagesc(T, X,flip(buffer{j}.solution_data));
+                        %set(h, 'EdgeColor', 'none');
                         title(buffer{j}.methode + ", POD: " + string(buffer{j}.pod));
                         colormap turbo;
                         colorbar;
+           
                     end
 
             end

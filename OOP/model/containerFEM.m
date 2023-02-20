@@ -27,30 +27,61 @@ classdef containerFEM < container
 
         function sol = solve(obj)
             nodes = obj.nodes;
-
             [F K M] = obj.construct_matrices();
             c_0 = inv(M) * F;
             t = obj.parameterObj.t;
-            C = zeros(nodes, uint16(1+obj.parameterObj.nt));
+            C = zeros(nodes, uint16(obj.parameterObj.nt));
             dt = obj.parameterObj.T / (obj.parameterObj.nt - 1);
             c_o = inv(M)*F;
             C(:, 1) = c_o;
             j = 2;
             im = inv(M);
-            for i=dt:dt:obj.parameterObj.T
-                c_n = obj.parameterObj.alpha*dt * im * K * c_o + c_o;
+            N = im * K;
+            N(1,:) = [0, zeros(1, nodes-1)];
+            N(nodes,:) = [zeros(1, nodes-1), 0];
+            
+            im(1,:) = [0, zeros(1, nodes-1)];
+            im(nodes,:) = [zeros(1, nodes-1), 0];
+
+            for i=dt:dt:obj.parameterObj.T          
+                %dt * im * obj.generate_h_disc(i)
+                c_n = obj.parameterObj.alpha*dt *N* c_o + dt * im * obj.generate_h_disc(i) + c_o;
                 c_o = c_n;
                 C(:, j) = c_o;
                 j= j +1;
             end
+            size(C)
+            figure(99)
+            imagesc(C)
             S = [];
+            
             for t = 1:1:obj.parameterObj.nt
                 c = C(:, t);
                 interp_c = interp1(linspace(0, obj.parameterObj.L, obj.nodes), c, obj.parameterObj.X);
                 S(:,t) = interp_c;
             end
-        
             sol = solution(S, "FEM", 0, 0);
+        end
+        
+        function V = generate_h_disc(obj, j)
+             dt = obj.parameterObj.T / (obj.parameterObj.nt - 1);
+             l = int32(j / dt);
+             nodes = obj.nodes;
+             V = zeros(nodes, 1);
+             h = obj.parameterObj.h(:, l).';
+             delta_nodes = obj.delta_nodes;
+             for i = 1:nodes-2
+                  t = [];
+                  for j = 1:length(obj.parameterObj.X) 
+                    t(end+1) = containerFEM.triag(obj.parameterObj.X(j), delta_nodes, (i-1)*delta_nodes, (i)*delta_nodes, (i+1)*delta_nodes);
+                  end
+                  V(i+1) =  trapz(obj.parameterObj.X,t.*h);
+             end
+             V(1) = h(1);
+             V(end) = h(end);
+             
+             %[sum(V), l]
+
         end
         
         function [F K M] = construct_matrices(obj)
@@ -70,9 +101,8 @@ classdef containerFEM < container
                 t(end+1) = containerFEM.triag(obj.parameterObj.X(j), delta_nodes, (i-1)*delta_nodes, (i)*delta_nodes, (i+1)*delta_nodes);
               end
            
-              F(i+1) =  trapz(t.*f);
+              F(i+1) =  trapz(obj.parameterObj.X,t.*f);
             end
-
             F(1) = f(1);
             F(end) = f(end);
             
@@ -95,6 +125,7 @@ classdef containerFEM < container
             Mmod(1,:) = [1, zeros(1, nodes-1)];
             Mmod(nodes,:) = [zeros(1, nodes-1), 1];
             M = Mmod;
+
         end
 
 
