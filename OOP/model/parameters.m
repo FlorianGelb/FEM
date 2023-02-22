@@ -33,6 +33,7 @@ classdef parameters
             obj.X = linspace(0, L, n);
             obj.t = linspace(0, T, nt);
             obj.k = (2*pi/L) * [0:n/2-1 -n/2:-1].';
+            obj.dt = obj.T / (obj.nt - 1);
         end    
 
     end

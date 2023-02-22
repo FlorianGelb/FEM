@@ -10,9 +10,8 @@ classdef containerFT < container
         
         function sol = solve(obj)
             t = obj.parameterObj.t;
-            [t, fft_sol] = ode45(@(t,fft_sol)rhs_1dHeatFT(t,obj.parameterObj.k, obj.parameterObj.alpha, fft_sol),t,fft(obj.parameterObj.u0));
- 
-
+            dt = obj.parameterObj.dt;
+            [t, fft_sol] = ode45(@(t,fft_sol)rhs_1dHeatFT(t,obj.parameterObj.k, obj.parameterObj.alpha, fft_sol, dt, obj.parameterObj.h),t,fft(obj.parameterObj.u0));
             usol = [];
             for j = 1:length(t)
                 usol(j, :) = ifft(fft_sol(j,:));    

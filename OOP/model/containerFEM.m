@@ -31,28 +31,21 @@ classdef containerFEM < container
             c_0 = inv(M) * F;
             t = obj.parameterObj.t;
             C = zeros(nodes, uint16(obj.parameterObj.nt));
-            dt = obj.parameterObj.T / (obj.parameterObj.nt - 1);
+            dt = obj.parameterObj.dt;
             c_o = inv(M)*F;
             C(:, 1) = c_o;
             j = 2;
             im = inv(M);
-            N = im * K;
-            N(1,:) = [0, zeros(1, nodes-1)];
-            N(nodes,:) = [zeros(1, nodes-1), 0];
-            
             im(1,:) = [0, zeros(1, nodes-1)];
             im(nodes,:) = [zeros(1, nodes-1), 0];
+            N = im * K;
 
             for i=dt:dt:obj.parameterObj.T          
-                %dt * im * obj.generate_h_disc(i)
                 c_n = obj.parameterObj.alpha*dt *N* c_o + dt * im * obj.generate_h_disc(i) + c_o;
                 c_o = c_n;
                 C(:, j) = c_o;
                 j= j +1;
             end
-            size(C)
-            figure(99)
-            imagesc(C)
             S = [];
             
             for t = 1:1:obj.parameterObj.nt
@@ -63,24 +56,28 @@ classdef containerFEM < container
             sol = solution(S, "FEM", 0, 0);
         end
         
+        function t = generate_triags(obj, i)
+            delta_nodes = obj.delta_nodes;
+            t = [];
+            for j = 1:length(obj.parameterObj.X) 
+                t(end+1) = containerFEM.triag(obj.parameterObj.X(j), delta_nodes, (i-1)*delta_nodes, (i)*delta_nodes, (i+1)*delta_nodes);
+            end
+        end
+
+
         function V = generate_h_disc(obj, j)
-             dt = obj.parameterObj.T / (obj.parameterObj.nt - 1);
+             dt = obj.parameterObj.dt;
              l = int32(j / dt);
              nodes = obj.nodes;
              V = zeros(nodes, 1);
              h = obj.parameterObj.h(:, l).';
              delta_nodes = obj.delta_nodes;
              for i = 1:nodes-2
-                  t = [];
-                  for j = 1:length(obj.parameterObj.X) 
-                    t(end+1) = containerFEM.triag(obj.parameterObj.X(j), delta_nodes, (i-1)*delta_nodes, (i)*delta_nodes, (i+1)*delta_nodes);
-                  end
+                  t = obj.generate_triags(i);
                   V(i+1) =  trapz(obj.parameterObj.X,t.*h);
              end
              V(1) = h(1);
              V(end) = h(end);
-             
-             %[sum(V), l]
 
         end
         
@@ -96,11 +93,7 @@ classdef containerFEM < container
              M = zeros(nodes);
 
             for i = 1:nodes-2
-              t = [];
-              for j = 1:length(obj.parameterObj.X) 
-                t(end+1) = containerFEM.triag(obj.parameterObj.X(j), delta_nodes, (i-1)*delta_nodes, (i)*delta_nodes, (i+1)*delta_nodes);
-              end
-           
+              t = obj.generate_triags(i);
               F(i+1) =  trapz(obj.parameterObj.X,t.*f);
             end
             F(1) = f(1);

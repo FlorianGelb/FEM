@@ -55,12 +55,7 @@ classdef main
                     figure(i)
                     for j = 1:length(buffer)
                         subplot(1, length(buffer), j);
-                        disp("--")
-                        size(flip(buffer{j}.solution_data))
-                        size(X)
-                        size(T)
                         h = imagesc(T, X,buffer{j}.solution_data);
-                        %set(h, 'EdgeColor', 'none');
                         title(buffer{j}.methode + ", POD: " + string(buffer{j}.pod));
                         colormap turbo;
                         colorbar;

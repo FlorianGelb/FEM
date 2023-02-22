@@ -17,7 +17,6 @@ classdef createPOD
             snapshots = obj.snapshots.solution_data;
             [U S V] = svd(snapshots, "econ");
             E = diag(S)/trace(S);
-            plot(E)
             n_mode = 0;
             cum_E = 0;
             for i = 1:length(E)
@@ -35,7 +34,8 @@ classdef createPOD
             end
 
             a0 = phi.' * snapshots(:, 1);
-            [t, asol] = ode45("a_rhs", obj.parameterObj.t, a0,[], phi, phi_xx, obj.parameterObj.alpha);
+            dt = obj.parameterObj.dt;
+            [t, asol] = ode45("a_rhs", obj.parameterObj.t, a0,[], phi, phi_xx, obj.parameterObj.alpha, dt, obj.parameterObj.h);
             
             usol = zeros(size(phi, 1), length(obj.parameterObj.t)).';           
             for j = 1:length(t)
