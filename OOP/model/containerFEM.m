@@ -28,19 +28,18 @@ classdef containerFEM < container
         function sol = solve(obj)
             nodes = obj.nodes;
             [F K M] = obj.construct_matrices();
-            c_0 = inv(M) * F;
+            im = inv(M);
+            %im(1,:) = [0, zeros(1, nodes-1)];
+            %im(nodes,:) = [zeros(1, nodes-1), 0];
             t = obj.parameterObj.t;
             C = zeros(nodes, uint16(obj.parameterObj.nt));
             dt = obj.parameterObj.dt;
-            c_o = inv(M)*F;
+            c_o = im*F;
             C(:, 1) = c_o;
             j = 2;
-            im = inv(M);
-            im(1,:) = [0, zeros(1, nodes-1)];
-            im(nodes,:) = [zeros(1, nodes-1), 0];
             N = im * K;
 
-            for i=dt:dt:obj.parameterObj.T          
+            for i=dt:dt:obj.parameterObj.T 
                 c_n = obj.parameterObj.alpha*dt *N* c_o + dt * im * obj.generate_h_disc(i) + c_o;
                 c_o = c_n;
                 C(:, j) = c_o;
@@ -53,6 +52,7 @@ classdef containerFEM < container
                 interp_c = interp1(linspace(0, obj.parameterObj.L, obj.nodes), c, obj.parameterObj.X);
                 S(:,t) = interp_c;
             end
+            S
             sol = solution(S, "FEM", 0, 0);
         end
         
@@ -72,12 +72,11 @@ classdef containerFEM < container
              V = zeros(nodes, 1);
              h = obj.parameterObj.h(:, l).';
              delta_nodes = obj.delta_nodes;
-             for i = 1:nodes-2
+             for i = 1:nodes
                   t = obj.generate_triags(i);
-                  V(i+1) =  trapz(obj.parameterObj.X,t.*h);
+                  V(i) =  trapz(obj.parameterObj.X,t.*h);
              end
-             V(1) = h(1);
-             V(end) = h(end);
+
 
         end
         
@@ -92,13 +91,15 @@ classdef containerFEM < container
              K = zeros(nodes);
              M = zeros(nodes);
 
-            for i = 1:nodes-2
+            for i = 1:nodes
               t = obj.generate_triags(i);
-              F(i+1) =  trapz(obj.parameterObj.X,t.*f);
+              size(t)
+              size(f)
+              F(i) =  trapz(obj.parameterObj.X,t.*f);
             end
-            F(1) = f(1);
-            F(end) = f(end);
-            
+
+            figure(499)
+            plot(f)
             for i = 1:nodes
                 K(i,i) = -2/delta_nodes;
                 M(i, i) = ii;
@@ -111,13 +112,9 @@ classdef containerFEM < container
                     M(i, i+1) =   ij;
                 end
             end
-            
-            K = obj.parameterObj.alpha * K;
 
-            Mmod = M;
-            Mmod(1,:) = [1, zeros(1, nodes-1)];
-            Mmod(nodes,:) = [zeros(1, nodes-1), 1];
-            M = Mmod;
+
+            
 
         end
 

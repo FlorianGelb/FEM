@@ -34,7 +34,9 @@ classdef main
         
         function plot(obj)  
             T = obj.parameterObj.t;
-            X = obj.parameterObj.X;        
+            X = obj.parameterObj.X;
+            min_ = Inf;
+            max_ = -Inf;
             for i = 1:length(obj.sols)
                     sol = obj.sols{i};
                     buffer = {};
@@ -56,13 +58,23 @@ classdef main
                     for j = 1:length(buffer)
                         subplot(1, length(buffer), j);
                         h = imagesc(T, X,buffer{j}.solution_data);
+                        mx = max(max(buffer{j}.solution_data));
+                        if mx > max_
+                            max_ = mx;
+                        end
+                        mn = min(min(buffer{j}.solution_data))
+                        if mn < min_
+                            min_ = mn;
+                        end
+                        
                         title(buffer{j}.methode + ", POD: " + string(buffer{j}.pod));
                         colormap turbo;
                         colorbar;
-           
-                    end
+                        caxis([min_, max_])
+                    end           
 
             end
+
         end
 
     end
