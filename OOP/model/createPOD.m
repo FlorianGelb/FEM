@@ -1,16 +1,15 @@
-classdef createPOD
+classdef createPOD < container
     
     properties
         snapshots;
         energie;
-        parameterObj;
     end
     
     methods
         function obj = createPOD(snapshots,energie, parameterObj)
+            obj = obj@container(parameterObj);
             obj.snapshots = snapshots;
-            obj.energie = energie;
-            obj.parameterObj = parameterObj;      
+            obj.energie = energie;   
         end
         
         function sol = solve(obj)

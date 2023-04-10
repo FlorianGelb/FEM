@@ -3,8 +3,7 @@ classdef containerFEM < container
     
     properties
         delta_nodes;
-        nodes;
-       
+        nodes;       
     end
 
     methods(Static)
@@ -21,8 +20,8 @@ classdef containerFEM < container
     methods
         function obj = containerFEM(parameterObj)
              obj = obj@container(parameterObj);
-             obj.delta_nodes = 2 * obj.parameterObj.dx;
-             obj.nodes = floor(obj.parameterObj.L / obj.delta_nodes + 1);
+             obj.delta_nodes = obj.parameterObj.dx;
+             obj.nodes = obj.parameterObj.n;
         end
 
         function sol = solve(obj)
@@ -38,9 +37,9 @@ classdef containerFEM < container
             C(:, 1) = c_o;
             j = 2;
             N = im * K;
-
+            
             for i=dt:dt:obj.parameterObj.T 
-                c_n = obj.parameterObj.alpha*dt *N* c_o + dt * im * obj.generate_h_disc(i) + c_o;
+                c_n = obj.parameterObj.alpha*dt *N* c_o + dt * obj.parameterObj.h(:, j) + c_o;
                 c_o = c_n;
                 C(:, j) = c_o;
                 j= j +1;
@@ -52,8 +51,8 @@ classdef containerFEM < container
                 interp_c = interp1(linspace(0, obj.parameterObj.L, obj.nodes), c, obj.parameterObj.X);
                 S(:,t) = interp_c;
             end
-            S
             sol = solution(S, "FEM", 0, 0);
+
         end
         
         function t = generate_triags(obj, i)
@@ -65,21 +64,7 @@ classdef containerFEM < container
         end
 
 
-        function V = generate_h_disc(obj, j)
-             dt = obj.parameterObj.dt;
-             l = int32(j / dt);
-             nodes = obj.nodes;
-             V = zeros(nodes, 1);
-             h = obj.parameterObj.h(:, l).';
-             delta_nodes = obj.delta_nodes;
-             for i = 1:nodes
-                  t = obj.generate_triags(i);
-                  V(i) =  trapz(obj.parameterObj.X,t.*h);
-             end
-
-
-        end
-        
+    
         function [F K M] = construct_matrices(obj)
              delta_nodes = obj.delta_nodes;
              nodes = obj.nodes;
@@ -93,13 +78,9 @@ classdef containerFEM < container
 
             for i = 1:nodes
               t = obj.generate_triags(i);
-              size(t)
-              size(f)
               F(i) =  trapz(obj.parameterObj.X,t.*f);
             end
 
-            figure(499)
-            plot(f)
             for i = 1:nodes
                 K(i,i) = -2/delta_nodes;
                 M(i, i) = ii;

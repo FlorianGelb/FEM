@@ -13,6 +13,10 @@ classdef parameters
         nt;
         n_nodes;
         h;
+        A;
+        B;
+        C; 
+        D;
     end
     
     methods
@@ -34,7 +38,14 @@ classdef parameters
             obj.t = linspace(0, T, nt);
             obj.k = (2*pi/L) * [0:n/2-1 -n/2:-1].';
             obj.dt = obj.T / (obj.nt - 1);
-        end    
+        end
+
+        function obj = set_system_matrices(obj, A, B, C, D)
+            obj.A = A;
+            obj.B = B;
+            obj.C = C;
+            obj.D = D;
+        end
 
     end
 end
