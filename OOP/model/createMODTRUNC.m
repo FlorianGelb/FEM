@@ -1,26 +1,27 @@
-classdef createBALRED < container
+classdef createMODTRUNC < container
     properties
     modes;
     pred;
     end
     methods
-        function obj = createBALRED(modes, pred, parameterObj)
+        function obj = createMODTRUNC(modes, pred, parameterObj)
              obj = obj@container(parameterObj);
              obj.modes = modes;
              obj.pred = pred;
         end
+
         
         function sol = solve(obj)
             A = obj.parameterObj.A;
             B = obj.parameterObj.B;
             C = obj.parameterObj.C;
             D = obj.parameterObj.D;
-            opts = ml_morlabopts('ml_ct_ss_bt');
+            
+            opts = ml_morlabopts('ml_ct_ss_mt');
             opts.StoreProjection = 1;
-            opts.OrderComputation = 'Order';
-            opts.Order            = obj.modes;
+            opts.OrderComputation = 'Alpha';
             sys = struct('A' , A, 'B' , eye(size(B)), 'C' , C, 'D' , D);
-            [rom, info] = ml_ct_ss_bt(sys, opts);
+            [rom, info] = ml_ct_ss_mt(sys, opts)
             C = [obj.parameterObj.u0.'];
             c_o = info.W * obj.parameterObj.u0.';
             dt = obj.parameterObj.dt;

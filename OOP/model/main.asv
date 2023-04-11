@@ -25,7 +25,7 @@ classdef main
                 mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
                 %obj.sols{end+1} = pod.solve();
                 %obj.sols{end+1} = bt.solve();
-                obj.sols{end+1} = mt.solve();
+                
             end
         end
 
