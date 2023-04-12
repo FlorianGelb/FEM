@@ -16,11 +16,17 @@ classdef createMODTRUNC < container
             B = obj.parameterObj.B;
             C = obj.parameterObj.C;
             D = obj.parameterObj.D;
+
+            eigen_values = sort(real(eig(A)))
+            size(eigen_values)
+            alpha = (eigen_values(end-(obj.modes)) + eigen_values(end-(obj.modes-1)))/2
+            size(alpha)
             
             opts = ml_morlabopts('ml_ct_ss_mt');
             opts.StoreProjection = 1;
             opts.OrderComputation = 'Alpha';
-            sys = struct('A' , A, 'B' , eye(size(B)), 'C' , C, 'D' , D);
+            opts.Alpha = alpha;
+            sys = struct('A' , A, 'B' , B, 'C' , C, 'D' , D);
             [rom, info] = ml_ct_ss_mt(sys, opts)
             C = [obj.parameterObj.u0.'];
             c_o = info.W * obj.parameterObj.u0.';

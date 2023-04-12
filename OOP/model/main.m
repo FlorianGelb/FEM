@@ -19,12 +19,16 @@ classdef main
         end
         
         function obj = rom(obj, energie, modes)
+            if modes < 10
+            modes = 10;
+            warning("Number of modes has to be at least 10")
+            end
             for i = 1:length(obj.sols)
-                %pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
-                %bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
+              %  pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
+              %  bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
                 mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
-                %obj.sols{end+1} = pod.solve();
-                %obj.sols{end+1} = bt.solve();
+              %  obj.sols{end+1} = pod.solve();
+              % obj.sols{end+1} = bt.solve();
                 obj.sols{end+1} = mt.solve();
             end
         end
