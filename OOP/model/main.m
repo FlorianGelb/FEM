@@ -26,10 +26,12 @@ classdef main
             for i = 1:length(obj.sols)
               %  pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
               %  bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
-                mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
+              %  mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
+                 hna = createHNA(modes, obj.sols{i}, obj.parameterObj);
               %  obj.sols{end+1} = pod.solve();
               % obj.sols{end+1} = bt.solve();
-                obj.sols{end+1} = mt.solve();
+               % obj.sols{end+1} = mt.solve();
+                obj.sols{end+1} = hna.solve();
             end
         end
 
