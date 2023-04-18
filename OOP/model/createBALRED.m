@@ -19,20 +19,13 @@ classdef createBALRED < container
             opts.StoreProjection = 1;
             opts.OrderComputation = 'Order';
             opts.Order            = obj.modes;
-            sys = struct('A' , A, 'B' , eye(size(B)), 'C' , C, 'D' , D);
+            sys = struct('A' , A, 'B' , B, 'C' , C, 'D' , D);
             [rom, info] = ml_ct_ss_bt(sys, opts);
-            C = [obj.parameterObj.u0.'];
-            c_o = info.W * obj.parameterObj.u0.';
-            dt = obj.parameterObj.dt;
-            j = 2;
-            for i=dt:dt:obj.parameterObj.T 
-                c_n = obj.parameterObj.alpha*dt *rom.A* c_o +  dt * rom.B * obj.parameterObj.h(:, j) + c_o;
-                c_o = c_n;
-                C(:, j) = info.T * c_o;
-                j= j +1;
-            end
-            sol = solution(C, obj.pred.methode, 0, obj.pred);
-
+            c_0 = info.W * obj.parameterObj.u0.';
+            sol = obj.euler(rom.A, rom.B, info.T, c_0);
+            sol.method = "Balanced Reduction";
+            sol.pred = obj.pred;
+            sol.reduced_model = rom;
         end
 
     end

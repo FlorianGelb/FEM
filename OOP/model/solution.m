@@ -3,17 +3,17 @@ classdef solution
     
     properties
         solution_data;
-        methode;
-        pod;
+        method;
         pred;
+        reduced_model;
     end
     
     methods
-        function obj = solution(solution_data, methode, pod, pred)
+        function obj = solution(solution_data, method, pred, mred)
             obj.solution_data = solution_data;
-            obj.methode = methode;
-            obj.pod = pod;
+            obj.method = method;
             obj.pred = pred;
+            obj.reduced_model = mred;
         end
     end
 end
