@@ -4,6 +4,7 @@ classdef main
         algorithms = {};
         parameterObj;
         sols = {};
+        modes;
     end
     
     methods
@@ -27,13 +28,14 @@ classdef main
              warning("Number of modes cannot be larger than " + string(obj.parameterObj.n));
              modes = obj.parameterObj.n;
             end
+            obj.modes = modes;
             for i = 1:length(obj.sols)
-              % pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
+               pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
               
                bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
                mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
                hna = createHNA(modes, obj.sols{i}, obj.parameterObj);
-               %obj.sols{end+1} = pod.solve();
+               obj.sols{end+1} = pod.solve();
                obj.sols{end+1} = bt.solve();
                obj.sols{end+1} = mt.solve();
                obj.sols{end+1} = hna.solve();
@@ -56,11 +58,13 @@ classdef main
             end
         end
         
-        function compare(obj)
+        function compare(obj, close_all)
+             T = obj.parameterObj.t;
+             X = obj.parameterObj.X;
              for i = 1:length(obj.sols)   
                 sol = obj.sols{i};
-                    figure(13)
-                    if ~isa(sol.pred, "double")
+                    
+                    if ~isa(sol.pred, "double") && sol.method ~= "Hankel Norm Approximation"
                         E = sol.solution_data - sol.pred.solution_data;
                         E_2 = []
                         E_max = [];
@@ -68,11 +72,34 @@ classdef main
                             E_2(end + 1) = norm(E(:, t), 2);
                             E_max(end+1) = norm(E(:, t), "inf");
                         end
-                        plot(E_2);
-                        figure(14);
-                        imagesc(E);
-                        figure(15);
-                        plot(E_max);
+                        figure;
+                        plot(T, E_2);
+                        set(gca, 'FontSize', 18);
+                        title("L2 Error for " + sol.method)
+                        xlabel("Time in s");
+                        ylabel("||Y - Ŷ||_2");
+                        exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
+
+                        figure;
+                        imagesc(T, X, E);
+                        set(gca, 'FontSize', 18);
+                        title("Absolute Error " + sol.method)
+                        xlabel("Time in s");
+                        ylabel("Length in cm");
+                        colormap turbo;
+                        colorbar;
+                        exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+".png")
+                        figure;
+                        plot(T,  E_max);
+                        set(gca, 'FontSize', 18);
+                        title("Max Error for " + sol.method)
+                        xlabel("Time in s");
+                        ylabel("||Y - Ŷ||_{max}");
+                        exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+".png")
+                        
+                        if close_all
+                            close all
+                        end
                     end 
              end
         end
@@ -123,7 +150,8 @@ classdef main
                         end
                 
                         title(buffer{j}.method);
-                        colormap turbo;        
+                        colormap turbo;
+                        set(gca, 'FontSize', 18);
                     end
                 colorbar;
                 caxis([min_, max_]);  
