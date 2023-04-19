@@ -4,6 +4,7 @@ classdef main
         algorithms = {};
         parameterObj;
         sols = {};
+        modes;
     end
     
     methods
@@ -27,8 +28,10 @@ classdef main
              warning("Number of modes cannot be larger than " + string(obj.parameterObj.n));
              modes = obj.parameterObj.n;
             end
+            obj.modes = modes;
             for i = 1:length(obj.sols)
                pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
+              
                bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
                mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
                hna = createHNA(modes, obj.sols{i}, obj.parameterObj);
@@ -55,15 +58,58 @@ classdef main
             end
         end
         
-        function compare(obj)
+        function compare(obj, close_all)
+             T = obj.parameterObj.t;
+             X = obj.parameterObj.X;
              for i = 1:length(obj.sols)   
                 sol = obj.sols{i};
-                  if ~isa(sol.pred, "double")
                     
-                  end
-                  
-             end
+                    if ~isa(sol.pred, "double") && sol.method ~= "Hankel Norm Approximation"
+                        E = sol.solution_data - sol.pred.solution_data;
+                        E_2 = []
+                        E_max = [];
+                        for t = 1:length(E)
+                            E_2(end + 1) = norm(E(:, t), 2);
+                            E_max(end+1) = norm(E(:, t), "inf");
+                        end
+                        figure;
+                        plot(T, E_2);
+                        set(gca, 'FontSize', 18);
+                        title("L2 Error for " + sol.method)
+                        xlabel("Time in s");
+                        ylabel("||Y - Ŷ||_2");
+                       
+                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" +  + ".png")
+                        %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
 
+                        figure;
+                        imagesc(T, X, E);
+                        set(gca, 'FontSize', 18);
+                        title("Absolute Error " + sol.method)
+                        xlabel("Time in s");
+                        ylabel("Length in cm");
+                        colormap turbo;
+                        colorbar;
+                        
+                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+".png")
+                        %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+".png")
+                        
+                        figure;
+                        plot(T,  E_max);
+                        set(gca, 'FontSize', 18);
+                        title("Max Error for " + sol.method)
+                        xlabel("Time in s");
+                        ylabel("||Y - Ŷ||_{max}");
+                        
+                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+".png")
+                        %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+".png")
+                        
+                        if close_all
+                            close all
+                        end
+                    end 
+             end
+        end
 
         function plot(obj)  
             T = obj.parameterObj.t;
@@ -110,19 +156,14 @@ classdef main
                             min_ = mn;
                         end
                 
-                        title(buffer{j}.methode + ", POD: " + string(buffer{j}.pod));
-
-                        
-                    end
+                        title(buffer{j}.method);
                         colormap turbo;
-                        colorbar;
-                        caxis([min_, max_]);
-                    
-
+                        set(gca, 'FontSize', 18);
+                    end
+                colorbar;
+                caxis([min_, max_]);  
             end
-
         end
-
     end
 end
 

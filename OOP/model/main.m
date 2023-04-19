@@ -74,28 +74,36 @@ classdef main
                         end
                         figure;
                         plot(T, E_2);
-                        set(gca, 'FontSize', 18);
-                        title("L2 Error for " + sol.method)
+                        set(gca, 'FontSize', 14);
+                        title("L2 Error for " + sol.method, ' ')
                         xlabel("Time in s");
                         ylabel("||Y - Ŷ||_2");
-                        exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
+                       
+                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + ".png")
+                        %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
 
                         figure;
-                        imagesc(T, X, E);
-                        set(gca, 'FontSize', 18);
-                        title("Absolute Error " + sol.method)
+                        imagesc(T, X, abs(E./sol.solution_data));
+                        set(gca, 'FontSize', 14);
+                        title("Relative Error" + sol.method, ' ')
                         xlabel("Time in s");
                         ylabel("Length in cm");
                         colormap turbo;
                         colorbar;
-                        exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+".png")
+                        caxis([0, 1]); 
+                        
+                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n + ".png")
+                        %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+".png")
+                        
                         figure;
                         plot(T,  E_max);
-                        set(gca, 'FontSize', 18);
-                        title("Max Error for " + sol.method)
+                        set(gca, 'FontSize', 14);
+                        title("Max Error for " + sol.method, " ")
                         xlabel("Time in s");
                         ylabel("||Y - Ŷ||_{max}");
-                        exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+".png")
+                        
+                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n +".png")
+                        %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+".png")
                         
                         if close_all
                             close all
