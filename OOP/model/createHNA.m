@@ -24,7 +24,7 @@ classdef createHNA < container
             
             sys = struct('A' , A, 'B' , B, 'C' , C, 'D' , D);
             [rom, info] = ml_ct_ss_hna(sys, opts);  
-            sol = obj.euler(rom.A, rom.B, eye(size(rom.A)), zeros(obj.modes, 1));
+            sol = obj.euler(rom.A, rom.B, rom.C, rom.B*obj.parameterObj.u0.');
             sol.method =  "Hankel Norm Approximation";
             sol.reduced_model = rom;
             sol.pred = obj.pred;

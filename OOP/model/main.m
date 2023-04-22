@@ -19,26 +19,30 @@ classdef main
             end
         end
         
-        function obj = rom(obj, energie, modes)
-            if modes < 10
-            modes = 10;
-            warning("Number of modes has to be at least 10")
-            end
-            if modes > obj.parameterObj.n
-             warning("Number of modes cannot be larger than " + string(obj.parameterObj.n));
-             modes = obj.parameterObj.n;
-            end
+        function obj = rom(obj, modes, m)
+            %if modes < 10
+            %modes = 10;
+            %warning("Number of modes has to be at least 10")
+            %end
+            %if modes > obj.parameterObj.n
+            % warning("Number of modes cannot be larger than " + string(obj.parameterObj.n));
+            % modes = obj.parameterObj.n;
+            %end
             obj.modes = modes;
             for i = 1:length(obj.sols)
-               pod = createPOD(obj.sols{i}, energie, obj.parameterObj);
-              
-               bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
-               mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
-               hna = createHNA(modes, obj.sols{i}, obj.parameterObj);
+                pod = createPOD(obj.sols{i}, modes, obj.parameterObj);
                obj.sols{end+1} = pod.solve();
+
+
+               bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
                obj.sols{end+1} = bt.solve();
+
+               mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
                obj.sols{end+1} = mt.solve();
+
+               hna = createHNA(modes, obj.sols{i}, obj.parameterObj);
                obj.sols{end+1} = hna.solve();
+
             end
         end
 
@@ -58,51 +62,52 @@ classdef main
             end
         end
         
-        function compare(obj, close_all)
+        function [E_2] = compare(obj, close_all)
              T = obj.parameterObj.t;
              X = obj.parameterObj.X;
+             E_2 = dictionary;
              for i = 1:length(obj.sols)   
                 sol = obj.sols{i};
                     
-                    if ~isa(sol.pred, "double") && sol.method ~= "Hankel Norm Approximation"
+                    if ~isa(sol.pred, "double")
                         E = sol.solution_data - sol.pred.solution_data;
-                        E_2 = []
-                        E_max = [];
+                        %E_2(sol.method) = norm(E, "fro");
+                        E_2 = [];
                         for t = 1:length(E)
                             E_2(end + 1) = norm(E(:, t), 2);
-                            E_max(end+1) = norm(E(:, t), "inf");
+                            %E_max(end+1) = norm(E(:, t), "inf");
                         end
                         figure;
                         plot(T, E_2);
                         set(gca, 'FontSize', 14);
-                        title("L2 Error for " + sol.method, ' ')
+                        title("L2 Error of " + sol.method, ' ')
                         xlabel("Time in s");
                         ylabel("||Y - Ŷ||_2");
                        
-                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + ".png")
+                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + "sin.png")
                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
 
-                        figure;
-                        imagesc(T, X, abs(E./sol.solution_data));
-                        set(gca, 'FontSize', 14);
-                        title("Relative Error" + sol.method, ' ')
-                        xlabel("Time in s");
-                        ylabel("Length in cm");
-                        colormap turbo;
-                        colorbar;
-                        caxis([0, 1]); 
+                        %figure;
+                        %imagesc(T, X, abs(E./sol.solution_data));
+                        %set(gca, 'FontSize', 14);
+                        %title("Relative Error" + sol.method, ' ')
+                        %xlabel("Time in s");
+                        %ylabel("Length in cm");
+                        %colormap turbo;
+                        %colorbar;
+                        %caxis([0, 1]); 
                         
-                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n + ".png")
+                        %exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n + ".png")
                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+".png")
                         
-                        figure;
-                        plot(T,  E_max);
-                        set(gca, 'FontSize', 14);
-                        title("Max Error for " + sol.method, " ")
-                        xlabel("Time in s");
-                        ylabel("||Y - Ŷ||_{max}");
+                        %figure;
+                        %plot(T,  E_max);
+                        %set(gca, 'FontSize', 14);
+                        %title("Max Error for " + sol.method, " ")
+                        %xlabel("Time in s");
+                        %ylabel("||Y - Ŷ||_{max}");
                         
-                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n +".png")
+                        %exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n +".png")
                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+".png")
                         
                         if close_all

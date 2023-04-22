@@ -6,26 +6,33 @@ classdef createPOD < container
     end
     
     methods
-        function obj = createPOD(snapshots,energie, parameterObj)
+        function obj = createPOD(snapshots,modes, parameterObj)
             obj = obj@container(parameterObj);
             obj.snapshots = snapshots;
-            obj.energie = energie;   
+            obj.energie = modes;   
         end
         
         function sol = solve(obj)
             snapshots = obj.snapshots.solution_data;
             [U S V] = svd(snapshots, "econ");
             E = diag(S)/trace(S);
-            n_mode = 0;
-            cum_E = 0;
-            for i = 1:length(E)
-                cum_E = cum_E + E(i);
-                n_mode = n_mode + 1;
-                if cum_E >= obj.energie
-                break
-                end
-            end
-            
+            %figure;
+            %plot(100*E, "*", 'MarkerSize',15);
+            %title("Variance Captured by Mode");
+            %xlabel("Mode Number");
+            %ylabel("Variance in %");
+            %set(gca, 'FontSize', 25);
+
+            %n_mode = 0;
+            %cum_E = 0;
+            %for i = 1:length(E)
+            %    cum_E = cum_E + E(i);
+            %    n_mode = n_mode + 1;
+            %    if cum_E >= obj.energie
+            %    break
+            %    end
+            %end
+            n_mode = obj.energie;
             phi = U(:, 1:n_mode);
             phi_xx = [];
             for i = 1:n_mode
