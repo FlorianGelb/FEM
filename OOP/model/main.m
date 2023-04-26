@@ -71,11 +71,11 @@ classdef main
                     
                     if ~isa(sol.pred, "double")
                         E = sol.solution_data - sol.pred.solution_data;
-                        %E_2(sol.method) = norm(E, "fro");
-                        sys = ss(obj.parameterObj.A, obj.parameterObj.B, obj.parameterObj.C, obj.parameterObj.D);
-                        sys_r = ss(sol.reduced_model.A, sol.reduced_model.B, sol.reduced_model.C, sol.reduced_model.D);
-                        sys_e = sys-sys_r;
-                        E_2(sol.method) = norm(sys_e, "inf");
+                        E_2(sol.method) = norm(E, "fro");
+                        %sys = ss(obj.parameterObj.A, obj.parameterObj.B, obj.parameterObj.C, obj.parameterObj.D);
+                        %sys_r = ss(sol.reduced_model.A, sol.reduced_model.B, sol.reduced_model.C, sol.reduced_model.D);
+                        %sys_e = sys-sys_r;
+                        %E_2(sol.method) = norm(sys_e, "inf");
                         %E_2 = [];
                         %for t = 1:length(E)
                         %    E_2(end + 1) = norm(E(:, t), 2);
