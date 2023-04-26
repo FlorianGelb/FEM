@@ -49,7 +49,8 @@ classdef createPOD < container
                     usol(j,:) = usol(j, :) + asol(j,i)*phi(:,i).';
                 end
             end
-            sol = solution(usol.', "Proper Orthorgonal Decomposition", obj.snapshots, phi);
+            rom = struct("A", obj.parameterObj.alpha*phi.'*phi_xx, "B", phi.', "C", phi, "D", obj.parameterObj.D);
+            sol = solution(usol.', "Proper Orthorgonal Decomposition", obj.snapshots, rom);
         end
 
         function der = spectral_der(obj, v)

@@ -72,19 +72,23 @@ classdef main
                     if ~isa(sol.pred, "double")
                         E = sol.solution_data - sol.pred.solution_data;
                         %E_2(sol.method) = norm(E, "fro");
-                        E_2 = [];
-                        for t = 1:length(E)
-                            E_2(end + 1) = norm(E(:, t), 2);
+                        sys = ss(obj.parameterObj.A, obj.parameterObj.B, obj.parameterObj.C, obj.parameterObj.D);
+                        sys_r = ss(sol.reduced_model.A, sol.reduced_model.B, sol.reduced_model.C, sol.reduced_model.D);
+                        sys_e = sys-sys_r;
+                        E_2(sol.method) = norm(sys_e, "inf");
+                        %E_2 = [];
+                        %for t = 1:length(E)
+                        %    E_2(end + 1) = norm(E(:, t), 2);
                             %E_max(end+1) = norm(E(:, t), "inf");
-                        end
-                        figure;
-                        plot(T, E_2);
-                        set(gca, 'FontSize', 14);
-                        title("L2 Error of " + sol.method, ' ')
-                        xlabel("Time in s");
-                        ylabel("||Y - Ŷ||_2");
+                        %end
+                        %figure;
+                        %plot(T, E_2);
+                        %set(gca, 'FontSize', 14);
+                        %title("L2 Error of " + sol.method, ' ')
+                        %xlabel("Time in s");
+                        %ylabel("||Y - Ŷ||_2");
                        
-                        exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + "sin.png")
+                        %exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + "sin.png")
                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
 
                         %figure;
