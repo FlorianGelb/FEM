@@ -18,6 +18,19 @@ classdef main
                 end
             end
         end
+
+        function obj = flush_rom(obj)
+            indexes = [];
+            for i = 1:length(obj.sols)
+
+                if obj.sols{i}.method ~= "Finite Element Method"
+                    indexes(end+1) = i;
+                end
+            end
+            obj.sols(indexes) = [];
+
+        
+        end
         
         function obj = rom(obj, modes, m)
             %if modes < 10
@@ -29,21 +42,23 @@ classdef main
             % modes = obj.parameterObj.n;
             %end
             obj.modes = modes;
-            for i = 1:length(obj.sols)
-                pod = createPOD(obj.sols{i}, modes, obj.parameterObj);
-               obj.sols{end+1} = pod.solve();
+            
+            %pod = createPOD(obj.sols{1}, modes, obj.parameterObj);
+            %obj.sols{end+1} = pod.solve();
+
+            %bt = createBALRED(modes, obj.sols{1}, obj.parameterObj);
+            %obj.sols{end+1} = bt.solve();
+
+            %mt = createMODTRUNC(modes, obj.sols{1}, obj.parameterObj);
+            %obj.sols{end+1} = mt.solve();
+
+            hna = createHNA(modes, obj.sols{1}, obj.parameterObj);
+            obj.sols{end+1} = hna.solve();
 
 
-               bt = createBALRED(modes, obj.sols{i}, obj.parameterObj);
-               obj.sols{end+1} = bt.solve();
 
-               mt = createMODTRUNC(modes, obj.sols{i}, obj.parameterObj);
-               obj.sols{end+1} = mt.solve();
 
-               hna = createHNA(modes, obj.sols{i}, obj.parameterObj);
-               obj.sols{end+1} = hna.solve();
-
-            end
+            
         end
 
 
@@ -76,19 +91,19 @@ classdef main
                         %sys_r = ss(sol.reduced_model.A, sol.reduced_model.B, sol.reduced_model.C, sol.reduced_model.D);
                         %sys_e = sys-sys_r;
                         %E_2(sol.method) = norm(sys_e, "inf");
-                        %E_2 = [];
-                        %for t = 1:length(E)
-                        %    E_2(end + 1) = norm(E(:, t), 2);
-                            %E_max(end+1) = norm(E(:, t), "inf");
-                        %end
-                        %figure;
-                        %plot(T, E_2);
-                        %set(gca, 'FontSize', 14);
-                        %title("L2 Error of " + sol.method, ' ')
-                        %xlabel("Time in s");
-                        %ylabel("||Y - Ŷ||_2");
-                       
-                        %exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + "sin.png")
+%                         E_2 = [];
+%                         for t = 1:length(E)
+%                             E_2(end + 1) = norm(E(:, t), 2);
+%                             %E_max(end+1) = norm(E(:, t), "inf");
+%                         end
+%                         figure;
+%                         plot(T, E_2);
+%                         set(gca, 'FontSize', 14);
+%                         title("L2 Error of " + sol.method, ' ')
+%                         xlabel("Time in s");
+%                         ylabel("||Y - Ŷ||_2");
+%                        
+%                         exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + ".png")
                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
 
                         %figure;

@@ -14,6 +14,7 @@ classdef container
         end
         
         function sol = euler(obj, A, B, T, c_0)
+
             C = [T*c_0];
             j = 2;
             dt = obj.parameterObj.dt;
@@ -23,7 +24,6 @@ classdef container
                 C(:, j) = T*c_0;
                 j= j +1;
             end
-
             sol = solution(C, "", 0, 0); 
         end
 

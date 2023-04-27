@@ -43,12 +43,7 @@ classdef createPOD < container
             dt = obj.parameterObj.dt;
             [t, asol] = ode45("a_rhs", obj.parameterObj.t, a0,[], phi, phi_xx, obj.parameterObj.alpha, dt, obj.parameterObj.h);
             
-            usol = zeros(size(phi, 1), length(obj.parameterObj.t)).';           
-            for j = 1:length(t)
-                for i = 1:n_mode
-                    usol(j,:) = usol(j, :) + asol(j,i)*phi(:,i).';
-                end
-            end
+            usol = asol*phi.'
             rom = struct("A", obj.parameterObj.alpha*phi.'*phi_xx, "B", phi.', "C", phi, "D", obj.parameterObj.D);
             sol = solution(usol.', "Proper Orthorgonal Decomposition", obj.snapshots, rom);
         end
