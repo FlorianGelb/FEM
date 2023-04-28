@@ -70,7 +70,7 @@ classdef main
                 if isequal(class(obj.algorithms{i}),'containerFEM')
                     [K M] = obj.algorithms{i}.construct_matrices();
                     im = inv(M);
-                    N = im*K;
+                    N = obj.parameterObj.alpha * im*K;
                     obj.parameterObj = obj.parameterObj.set_system_matrices(N, eye(size(im)), eye(size(N)),  zeros(size(N, 1), size(im, 2)));
 
                 end

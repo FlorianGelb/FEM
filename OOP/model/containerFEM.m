@@ -15,7 +15,7 @@ classdef containerFEM < container
         function sol = solve(obj)
             nodes = obj.nodes;
             [K M] = obj.construct_matrices();
-            N = inv(M) * K;
+            N = obj.parameterObj.alpha * inv(M) * K;
             sol = obj.euler(N, eye(size(M)), eye(size(M)), obj.parameterObj.u0.');
             sol.method = "Finite Element Method";
         end
@@ -40,7 +40,7 @@ classdef containerFEM < container
                     K(i, i+1) = 1/delta_nodes;
                     M(i, i+1) =   ij;
                 end
-            end      
+            end
 
         end
 
