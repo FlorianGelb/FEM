@@ -6,6 +6,7 @@ classdef solution
         method;
         pred;
         reduced_model;
+        rom_time = [];
     end
     
     methods

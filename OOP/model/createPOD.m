@@ -12,10 +12,10 @@ classdef createPOD < container
             obj.energie = modes;   
         end
         
-        function sol = solve(obj)
+        function sol = solve(obj, time)
             snapshots = obj.snapshots.solution_data;
-            [U S V] = svd(snapshots, "econ");
-            E = diag(S)/trace(S);
+           
+            %E = diag(S)/trace(S);
             %figure;
             %plot(100*E, "*", 'MarkerSize',15);
             %title("Variance Captured by Mode");
@@ -33,6 +33,23 @@ classdef createPOD < container
             %    end
             %end
             n_mode = obj.energie;
+            rom_time = [];
+            if time
+                for i = 1:10
+                    tic;
+                    [U S V] = svd(snapshots, "econ");
+                    phi = U(:, 1:n_mode);
+                    phi_xx = [];
+                    for i = 1:n_mode
+                        phi_xx(:,i) = obj.spectral_der(phi(:, i));
+                    end
+                    rom_time(end+1) = toc;
+                end
+                sol = solution(NaN, "Proper Orthogonal Decomposition", obj.snapshots, NaN);
+                sol.rom_time = rom_time;
+            else
+            
+            [U S V] = svd(snapshots, "econ");
             phi = U(:, 1:n_mode);
             phi_xx = [];
             for i = 1:n_mode
@@ -41,11 +58,15 @@ classdef createPOD < container
 
             a0 = phi.' * snapshots(:, 1);
             dt = obj.parameterObj.dt;
-            [t, asol] = ode45("a_rhs", obj.parameterObj.t, a0,[], phi, phi_xx, obj.parameterObj.alpha, dt, obj.parameterObj.h);
-            
-            usol = asol*phi.'
+            sol = obj.euler(obj.parameterObj.alpha*phi.'*phi_xx, phi.', phi, a0);
+            %[t, asol] = ode45("a_rhs", obj.parameterObj.t, a0,[], phi, phi_xx, obj.parameterObj.alpha, dt, obj.parameterObj.h);
+                
             rom = struct("A", obj.parameterObj.alpha*phi.'*phi_xx, "B", phi.', "C", phi, "D", obj.parameterObj.D);
-            sol = solution(usol.', "Proper Orthorgonal Decomposition", obj.snapshots, rom);
+            sol.method = "Proper Orthogonal Decomposition";
+            sol.pred = obj.snapshots;
+            sol.reduced_model = rom;
+            sol.rom_time = rom_time;
+            end
         end
 
         function der = spectral_der(obj, v)

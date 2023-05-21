@@ -11,7 +11,7 @@ classdef createHNA < container
         end
 
         
-        function sol = solve(obj)
+        function sol = solve(obj, time)
             A = obj.parameterObj.A;
             B = obj.parameterObj.B;
             C = obj.parameterObj.C;
@@ -23,11 +23,22 @@ classdef createHNA < container
             opts.Order            = obj.modes;
             
             sys = struct('A' , A, 'B' , B, 'C' , C, 'D' , D);
-            [rom, info] = ml_ct_ss_hna(sys, opts);  
-            sol = obj.euler(rom.A, rom.B, rom.C, rom.B*obj.parameterObj.u0.');
-            sol.method =  "Hankel Norm Approximation";
-            sol.reduced_model = rom;
-            sol.pred = obj.pred;
+            if time
+                rom_time = [];
+                for i = 1:10
+                    f = @() ml_ct_ss_hna(sys, opts);
+                    rom_time(end+1) = timeit(f);
+                end
+                sol = solution(NaN, "Hankel Norm Approximation", sys, NaN);
+                sol.rom_time = rom_time;
+            else
+                [rom, info] = ml_ct_ss_hna(sys, opts);
+                sol = obj.euler(rom.A, rom.B, rom.C, rom.B*obj.parameterObj.u0.');
+                sol.method =  "Hankel Norm Approximation";
+                sol.reduced_model = rom;
+                sol.pred = obj.pred;
+
+            end
         end
 
     end
