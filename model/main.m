@@ -33,14 +33,6 @@ classdef main
         end
         
         function obj = rom(obj, modes, m)
-            %if modes < 10
-            %modes = 10;
-            %warning("Number of modes has to be at least 10")
-            %end
-            %if modes > obj.parameterObj.n
-            % warning("Number of modes cannot be larger than " + string(obj.parameterObj.n));
-            % modes = obj.parameterObj.n;
-            %end
             obj.modes = modes;
             
             pod = createPOD(obj.sols{1}, modes, obj.parameterObj);
@@ -54,10 +46,6 @@ classdef main
 
             hna = createHNA(modes, obj.sols{1}, obj.parameterObj);
             obj.sols{end+1} = hna.solve(m);
-
-
-
-
             
         end
 
@@ -100,45 +88,6 @@ classdef main
                         if mode == "time"
                             E_2(sol.method) = {sol.rom_time};
                         end
-
-% 
-%                         E_2 = [];
-%                         for t = 1:length(E)
-%                              E_2(end + 1) = norm(E(:, t), 2);
-% 
-%                         end
-%                         figure;
-%                         plot(T, E_2);
-%                         set(gca, 'FontSize', 14);
-%                         title("L2 Error of " + sol.method, ' ')
-%                         xlabel("Time in s");
-%                         ylabel("||Y - Ŷ||_2");
-%                        
-% %                         exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+"_" + obj.parameterObj.n + ".png")
-%                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/L2_"+ sol.method + "_"+obj.modes+".png")
-% 
-%                         figure;
-%                         imagesc(T, X, abs(E./sol.solution_data));
-%                         set(gca, 'FontSize', 14);
-%                         title("Relative Error" + sol.method, ' ')
-%                         xlabel("Time in s");
-%                         ylabel("Length in cm");
-%                         colormap turbo;
-%                         colorbar;
-%                         caxis([0, 1]); 
-%                         
-%                         %exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n + ".png")
-%                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/abs_"+ sol.method + "_"+obj.modes+".png")
-%                         
-%                         %figure;
-%                         %plot(T,  E_max);
-%                         %set(gca, 'FontSize', 14);
-%                         %title("Max Error for " + sol.method, " ")
-%                         %xlabel("Time in s");
-%                         %ylabel("||Y - Ŷ||_{max}");
-%                         
-%                         %exportgraphics(gcf, "C:/Users/Florian/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+ "_" + obj.parameterObj.n +".png")
-%                         %exportgraphics(gcf, "/home/f/Documents/Studienarbeit/images/max_"+ sol.method + "_"+obj.modes+".png")
                         
                     end 
              end

@@ -14,24 +14,6 @@ classdef createPOD < container
         
         function sol = solve(obj, time)
             snapshots = obj.snapshots.solution_data;
-           
-            %E = diag(S)/trace(S);
-            %figure;
-            %plot(100*E, "*", 'MarkerSize',15);
-            %title("Variance Captured by Mode");
-            %xlabel("Mode Number");
-            %ylabel("Variance in %");
-            %set(gca, 'FontSize', 25);
-
-            %n_mode = 0;
-            %cum_E = 0;
-            %for i = 1:length(E)
-            %    cum_E = cum_E + E(i);
-            %    n_mode = n_mode + 1;
-            %    if cum_E >= obj.energie
-            %    break
-            %    end
-            %end
             n_mode = obj.energie;
             rom_time = [];
             if time
@@ -59,7 +41,6 @@ classdef createPOD < container
             a0 = phi.' * snapshots(:, 1);
             dt = obj.parameterObj.dt;
             sol = obj.euler(obj.parameterObj.alpha*phi.'*phi_xx, phi.', phi, a0);
-            %[t, asol] = ode45("a_rhs", obj.parameterObj.t, a0,[], phi, phi_xx, obj.parameterObj.alpha, dt, obj.parameterObj.h);
                 
             rom = struct("A", obj.parameterObj.alpha*phi.'*phi_xx, "B", phi.', "C", phi, "D", obj.parameterObj.D);
             sol.method = "Proper Orthogonal Decomposition";
