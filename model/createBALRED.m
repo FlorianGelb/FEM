@@ -27,7 +27,7 @@ classdef createBALRED < container
                     f = @() ml_ct_ss_bt(sys, opts);
                     rom_time(end+1) = timeit(f);
                 end
-                sol = solution(NaN, "Balanced Reduction", sys, NaN);
+                sol = solution(NaN, "Balanced Reduction", obj.pred, sys);
                 sol.rom_time = rom_time;
             else   
                 [rom, info] = ml_ct_ss_bt(sys, opts);

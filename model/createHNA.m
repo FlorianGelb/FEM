@@ -29,7 +29,7 @@ classdef createHNA < container
                     f = @() ml_ct_ss_hna(sys, opts);
                     rom_time(end+1) = timeit(f);
                 end
-                sol = solution(NaN, "Hankel Norm Approximation", sys, NaN);
+                sol = solution(NaN, "Hankel Norm Approximation", obj.pred, sys);
                 sol.rom_time = rom_time;
             else
                 [rom, info] = ml_ct_ss_hna(sys, opts);

@@ -40,7 +40,7 @@ classdef createMODTRUNC < container
                     rom_time(end+1) = timeit(f);
                 end
 
-                sol = solution(NaN, "Modal Truncation", sys, NaN);
+                sol = solution(NaN, "Modal Truncation", obj.pred, sys);
                 sol.rom_time = rom_time;
             else
                 [rom, info] = ml_ct_ss_mt(sys, opts);
